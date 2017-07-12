@@ -3,17 +3,15 @@
 # Installer image
 FROM microsoft/nanoserver-insider-powershell AS installer-env
 
-SHELL ["powershell", "-Command", "$ErrorActionPreference = 'SilentlyContinue';"]
+SHELL ["C:\\Program Files\\PowerShell\\PowerShell.exe", "-Command", "$ErrorActionPreference = 'SilentlyContinue';"]
 
-RUN Invoke-WebRequest -Uri https://www.python.org/ftp/python/3.6.2/python-3.6.2rc2-embed-amd64.zip -Outfile C:\Users\Public\python.zip
-
-RUN Expand-Archive C:\Users\Public\python.zip -DestinationPath C:\Users\Public\python
-
-RUN Remove-Item -Force C:\Users\Public\python.zip
+RUN Invoke-WebRequest -Uri https://www.python.org/ftp/python/3.6.2/python-3.6.2rc2-embed-amd64.zip -Outfile C:\Users\Public\python.zip; `
+    Expand-Archive C:\Users\Public\python.zip -DestinationPath C:\Users\Public\python; `
+    Remove-Item -Force C:\Users\Public\python.zip
 
 #Runtime image 
 FROM microsoft/nanoserver-insider
 
-COPY --from=installer-env ["C:\Users\Public\python", "C:\\Program Files\\Python"]
+COPY --from=installer-env ["C:\\Users\\Public\\python", "C:\\Program Files\\Python"]
 
 RUN setx PATH "%PATH%;C:\Program Files\Python"
